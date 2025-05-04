@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Akira\Commentable\Exceptions\DeleteCommentNotAllowedException;
 use Akira\Commentable\Tests\Fixtures\Post;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = user();
 });
 
 it(/**
  * @throws Exception
- */ 'should create a comment', function () {
+ */ 'should create a comment', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -27,7 +27,7 @@ it(/**
 
 it(/**
  * @throws Exception
- */ 'should create a comment with a reply', function () {
+ */ 'should create a comment with a reply', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -43,7 +43,7 @@ it(/**
         ->content->toBe('reply1');
 });
 
-it('should create a comment with a reply and a reply to the reply', function () {
+it('should create a comment with a reply and a reply to the reply', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -61,7 +61,7 @@ it('should create a comment with a reply and a reply to the reply', function () 
         ->content->toBe('reply2');
 });
 
-it('shoulde delete a comment', function () {
+it('shoulde delete a comment', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -74,7 +74,7 @@ it('shoulde delete a comment', function () {
 
 });
 
-it('shoulde delete a reply', function () {
+it('shoulde delete a reply', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -89,7 +89,7 @@ it('shoulde delete a reply', function () {
 
 });
 
-it('shoulde delete a reply to a reply', function () {
+it('shoulde delete a reply to a reply', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -106,7 +106,7 @@ it('shoulde delete a reply to a reply', function () {
 
 });
 
-it('should not delete a comment  that does not belongs to  the user', function () {
+it('should not delete a comment  that does not belongs to  the user', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -120,7 +120,7 @@ it('should not delete a comment  that does not belongs to  the user', function (
         ->content->toBe('comment1');
 });
 
-it('should not delete a reply that does not belongs to the user', function () {
+it('should not delete a reply that does not belongs to the user', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -137,7 +137,7 @@ it('should not delete a reply that does not belongs to the user', function () {
 
 });
 
-it('should delete a comment if your the post owner', function () {
+it('should delete a comment if your the post owner', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -150,7 +150,7 @@ it('should delete a comment if your the post owner', function () {
 
 });
 
-it('should delete a reply if your the post owner', function () {
+it('should delete a reply if your the post owner', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -167,7 +167,7 @@ it('should delete a reply if your the post owner', function () {
 
 });
 
-it('should delete a reply to a reply if your the post owner', function () {
+it('should delete a reply to a reply if your the post owner', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 

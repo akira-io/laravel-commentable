@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Akira\Commentable\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 final class Comment extends Message
@@ -25,16 +24,6 @@ final class Comment extends Message
     public function commentable(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    /**
-     * Get the reactions for the comment.
-     *
-     * @return HasManyThrough<Model, $this>
-     */
-    public function replyReactions(): HasManyThrough
-    {
-        return $this->hasManyThrough(Reaction::class, Reply::class, 'reply_id', 'comment_id');
     }
 
     /**

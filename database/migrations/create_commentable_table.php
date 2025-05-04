@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create(config('commentable.comment_table', 'comments'), function (Blueprint $table) {
+        Schema::create(config('commentable.comment_table', 'comments'), function (Blueprint $table): void {
             $table->id();
 
             $table->nullableMorphs('commentable');
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create(config('commentable.reaction_table', 'reactions'), function (Blueprint $table) {
+        Schema::create(config('commentable.reaction_table', 'reactions'), function (Blueprint $table): void {
             $table->id();
             $table->morphs('owner');
             $table->foreignId('comment_id')->constrained(config('commentable.comment_table', 'comments'))->cascadeOnDelete();

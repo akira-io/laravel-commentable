@@ -13,7 +13,7 @@ final class Reaction extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<string>
+     * @var list<string>
      */
     protected $fillable = [
         'comment_id',
@@ -25,7 +25,7 @@ final class Reaction extends Model
     /**
      * Get the table associated with the model.
      *
-     * @return BelongsTo<Model, Reaction> *
+     * @return BelongsTo<Model, $this> *
      */
     public function user(): BelongsTo
     {
@@ -38,7 +38,7 @@ final class Reaction extends Model
     /**
      * Get the owner of the reaction.
      *
-     * @return MorphTo<Model, Reaction>
+     * @return MorphTo<Model, $this>
      */
     public function owner(): MorphTo
     {

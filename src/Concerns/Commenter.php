@@ -21,6 +21,7 @@ trait Commenter
      */
     public function comments(): MorphMany
     {
+
         return $this->morphMany(Comment::class, 'commenter');
     }
 
@@ -31,6 +32,7 @@ trait Commenter
      */
     public function replies(): HasMany
     {
+
         return $this->hasMany(Reply::class);
     }
 
@@ -45,19 +47,25 @@ trait Commenter
         $this->requireCommentableTrait($model);
 
         return $model->comments()->create($this->prepareCommentData($comment));
-
     }
 
+    /**
+     * Reply to a comment
+     */
     public function reply(Comment|Reply $comment, string $reply): Reply
     {
+
         return $comment->replies()->create($this->prepareCommentData($reply));
     }
 
     /**
-     * @throws Exception
+     * Delete a comment
+     *
+     * @throws DeleteCommentNotAllowedException
      */
     public function deleteComment(Comment|Reply $comment): void
     {
+
         if (! $this->approveCommentDeletion($comment)) {
             throw new DeleteCommentNotAllowedException();
         }
@@ -65,11 +73,13 @@ trait Commenter
         $comment->delete();
     }
 
+    /**
+     * Approve comment deletion
+     */
     public function approveCommentDeletion(Comment|Reply $comment): bool
     {
 
         return $this->getKey() === $comment->commenter_id;
-
     }
 
     /**
@@ -79,10 +89,13 @@ trait Commenter
      */
     public function forceDeleteComment(Comment|Reply $comment): ?bool
     {
+
         return $comment->delete();
     }
 
     /**
+     * Force delete a comment
+     *
      * @throws Exception
      */
     private function requireCommentableTrait(Model $model): void
@@ -93,12 +106,15 @@ trait Commenter
         }
     }
 
+    /**
+     * Prepare the comment data
+     */
     private function prepareCommentData(string $comment): array
     {
 
         return [
             'content' => $comment,
-            'commenter_type' => get_class($this),
+            'commenter_type' => $this::class,
             'commenter_id' => $this->getKey(),
         ];
     }

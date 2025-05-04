@@ -27,11 +27,21 @@ abstract class Message extends Model
         parent::__construct($attributes);
     }
 
+    /**
+     * Get the user that the comment belongs to.
+     *
+     * @return MorphTo<Model, $this>
+     */
     final public function commenter(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * Get the reactions for the comment.
+     *
+     * @return HasMany<Reaction, $this>
+     */
     final public function reactions(): HasMany
     {
         return $this->hasMany(Reaction::class, 'comment_id', 'id');
@@ -41,13 +51,18 @@ abstract class Message extends Model
     /**
      * Get the user  commenting the comment.
      *
-     * @return HasMany<Model, $this>
+     * @return HasMany<Reply, $this>
      */
     final public function replies(): HasMany
     {
         return $this->hasMany(Reply::class, 'reply_id', 'id');
     }
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
 

@@ -1,0 +1,79 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Class Akira\\Commentable\\Database\\Factories\\CommentFactory extends generic class Illuminate\\Database\\Eloquent\\Factories\\Factory but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: database/factories/CommentFactory.php
+
+		-
+			message: '#^Method Akira\\Commentable\\Database\\Factories\\CommentFactory\:\:definition\(\) should return array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\> but returns array\<string, Illuminate\\Support\\Carbon\>\.$#'
+			identifier: return.type
+			count: 1
+			path: database/factories/CommentFactory.php
+
+		-
+			message: '#^Parameter \#1 \$table of method Illuminate\\Database\\Schema\\ForeignIdColumnDefinition\:\:constrained\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/migrations/create_commentable_table.php
+
+		-
+			message: '#^Parameter \#1 \$table of method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:on\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/migrations/create_commentable_table.php
+
+		-
+			message: '#^Parameter \#1 \$table of static method Illuminate\\Support\\Facades\\Schema\:\:create\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: database/migrations/create_commentable_table.php
+
+		-
+			message: '#^Parameter \#1 \$table of static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: database/migrations/create_commentable_table.php
+
+		-
+			message: '#^Trait Akira\\Commentable\\Concerns\\Commentable is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/Commentable.php
+
+		-
+			message: '#^Trait Akira\\Commentable\\Concerns\\Commenter is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/Commenter.php
+
+		-
+			message: '#^Method Akira\\Commentable\\Models\\Message\:\:__construct\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Models/Message.php
+
+		-
+			message: '#^Property Illuminate\\Database\\Eloquent\\Model\:\:\$table \(string\|null\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Models/Message.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Models/Reaction.php
+
+		-
+			message: '#^Parameter \#2 \$foreignKey of method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Models/Reaction.php
+
+		-
+			message: '#^Unable to resolve the template type TRelatedModel in call to method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Models/Reaction.php

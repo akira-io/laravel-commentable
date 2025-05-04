@@ -16,6 +16,11 @@ final class Reply extends Message
         'reply_id',
     ];
 
+    /**
+     * Get the comment that the reply belongs to.
+     *
+     * @return BelongsTo<Comment, $this>
+     */
     public function comment(): BelongsTo
     {
         return $this->belongsTo(Comment::class);
