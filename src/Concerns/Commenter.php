@@ -64,7 +64,7 @@ trait Commenter
      *
      * @throws DeleteCommentNotAllowedException
      */
-    public function deleteComment(Comment|Reply $comment): void
+    public function deleteComment(CommentContract $comment): void
     {
 
         if (! $this->approveCommentDeletion($comment)) {
@@ -77,7 +77,7 @@ trait Commenter
     /**
      * Approve comment deletion
      */
-    public function approveCommentDeletion(Comment|Reply $comment): bool
+    public function approveCommentDeletion(CommentContract $comment): bool
     {
 
         return $this->getKey() === $comment->commenter_id;
