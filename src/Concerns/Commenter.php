@@ -22,7 +22,7 @@ trait Commenter
     public function comments(): MorphMany
     {
 
-        return $this->morphMany(Comment::class, 'commenter');
+        return $this->morphMany(config('commentable.models.comment'), 'commenter');
     }
 
     /**

@@ -68,6 +68,8 @@ abstract class Message extends Model
 
         return [
             'approved' => 'boolean',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 }

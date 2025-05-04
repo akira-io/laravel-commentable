@@ -19,4 +19,9 @@ return [
   */
     'user_foreign_key' => 'user_id',
 
+    'models' => [
+        'comment' => Akira\Commentable\Models\Comment::class,
+        'reaction' => Akira\Commentable\Models\Reaction::class,
+    ],
+
 ];
