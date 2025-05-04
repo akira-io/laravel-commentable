@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Akira\Commentable\Concerns;
 
+use Akira\Commentable\Contracts\CommentContract;
 use Akira\Commentable\Exceptions\DeleteCommentNotAllowedException;
 use Akira\Commentable\Models\Comment;
 use Akira\Commentable\Models\Reply;
@@ -41,7 +42,7 @@ trait Commenter
      *
      * @throws Exception
      */
-    public function comment(Model $model, string $comment): Comment
+    public function comment(Model $model, string $comment): CommentContract
     {
 
         $this->requireCommentableTrait($model);
@@ -52,7 +53,7 @@ trait Commenter
     /**
      * Reply to a comment
      */
-    public function reply(Comment|Reply $comment, string $reply): Reply
+    public function reply(Comment|Reply $comment, string $reply): CommentContract
     {
 
         return $comment->replies()->create($this->prepareCommentData($reply));

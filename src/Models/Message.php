@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Akira\Commentable\Models;
 
+use Akira\Commentable\Contracts\CommentContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-abstract class Message extends Model
+abstract class Message extends Model implements CommentContract
 {
     protected $fillable = [
         'content',
