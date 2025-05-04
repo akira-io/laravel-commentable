@@ -1,19 +1,11 @@
-# Commentable is a lightweight and flexible comment system package designed to seamlessly integrate into any Laravel project. Whether you’re building a blog, a forum, or a platform like DevHunter – this package makes it incredibly easy to make any model commentable.
+# Laravel Commentable
+---
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/akira/laravel-commentable.svg)](https://packagist.org/packages/akira/laravel-commentable)
+[![Total Downloads](https://img.shields.io/packagist/dt/akira/laravel-commentable.svg)](https://packagist.org/packages/akira/laravel-commentable)
+[![PHPStan Level](https://img.shields.io/badge/phpstan-level%209-brightgreen.svg)](https://phpstan.org)
+[![License](https://img.shields.io/packagist/l/akira/laravel-commentable.svg)](https://github.com/akira-io/laravel-commentable/blob/main/LICENSE)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/akira-io/commentable.svg?style=flat-square)](https://packagist.org/packages/akira-io/commentable)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/akira-io/commentable/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/akira-io/commentable/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/akira-io/commentable/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/akira-io/commentable/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/akira-io/commentable.svg?style=flat-square)](https://packagist.org/packages/akira-io/commentable)
-
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/commentable.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/commentable)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+**Commentable** is a lightweight and flexible comment system package designed to seamlessly integrate into any Laravel project. Whether you’re building a blog, a forum, or a platform like [HUNTER](https://devhunter.cv) – this package makes it incredibly easy to make any model commentable.
 
 ## Installation
 
@@ -36,25 +28,9 @@ You can publish the config file with:
 php artisan vendor:publish --tag="commentable-config"
 ```
 
-This is the contents of the published config file:
+## Documentation
 
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="commentable-views"
-```
-
-## Usage
-
-```php
-$commentable = new Akira\Commentable();
-echo $commentable->echoPhrase('Hello, Akira!');
-```
+You'll find installation instructions and full documentation on [Commentable website](https://commentable.akira-io.com).
 
 ## Testing
 
