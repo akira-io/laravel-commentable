@@ -1,16 +1,17 @@
 {
-  "preset": "laravel",
-  "ignore": {
-    "words": [
-      "php",
-      "followables",
-      "desc",
-      "asc",
-      "commitlint",
-      "commentable",
-      "pnpm",
-      "commenter"
-    ],
-    "paths": []
-  }
+    "preset": "laravel",
+    "ignore": {
+        "words": [
+            "php",
+            "followables",
+            "desc",
+            "asc",
+            "commitlint",
+            "commentable",
+            "pnpm",
+            "commenter",
+            "roadmap"
+        ],
+        "paths": []
+    }
 }
