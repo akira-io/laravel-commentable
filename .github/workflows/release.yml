@@ -13,8 +13,10 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
           fetch-depth: 0
 
@@ -34,8 +36,12 @@ jobs:
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           DEFAULT_BRANCH="$(git remote show origin | sed -n 's/.*HEAD branch: //p')"
           git add CHANGELOG.md
-          git diff --cached --quiet || git commit -m "chore(changelog): ${{ github.ref_name }}"
-          git push origin "HEAD:${DEFAULT_BRANCH}" || true
+          if git diff --cached --quiet; then
+            echo "CHANGELOG.md is already current."
+            exit 0
+          fi
+          git commit -m "chore(changelog): ${{ github.ref_name }}"
+          git push origin "HEAD:${DEFAULT_BRANCH}"
 
       - name: Extract release notes
         id: notes
@@ -59,16 +65,49 @@ jobs:
             --latest
 
       - name: Send GitHub Release to Discord
-        uses: SethCohen/github-releases-to-discord@24d166886aee4646d448c8a389ff9e1ebcab3682
-        with:
-          webhook_url: ${{ secrets.DISCORD }}
-          release_name: ${{ github.ref_name }}
-          release_body: ${{ steps.notes.outputs.body }}
-          release_html_url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
-          color: "2105893"
-          username: "Commentable"
-          avatar_url: "https://avatars.githubusercontent.com/u/116525492?s=96&v=4"
-          content: "||@everyone||"
-          footer_title: "Commentable"
-          footer_icon_url: "https://avatars.githubusercontent.com/u/116525492?s=96&v=4"
-          footer_timestamp: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD }}
+          RELEASE_BODY: ${{ steps.notes.outputs.body }}
+          RELEASE_NAME: ${{ github.ref_name }}
+          RELEASE_URL: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+        run: |
+          if [ -z "${DISCORD_WEBHOOK_URL}" ]; then
+            echo "Discord webhook is not configured."
+            exit 0
+          fi
+
+          python3 <<'PY'
+          import datetime
+          import json
+          import os
+          import urllib.request
+
+          payload = {
+              "content": "||@everyone||",
+              "username": "Commentable",
+              "avatar_url": "https://avatars.githubusercontent.com/u/116525492?s=96&v=4",
+              "embeds": [
+                  {
+                      "title": os.environ["RELEASE_NAME"],
+                      "url": os.environ["RELEASE_URL"],
+                      "description": os.environ["RELEASE_BODY"][:4096],
+                      "color": 2105893,
+                      "footer": {
+                          "text": "Commentable",
+                          "icon_url": "https://avatars.githubusercontent.com/u/116525492?s=96&v=4",
+                      },
+                      "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  }
+              ],
+          }
+
+          request = urllib.request.Request(
+              os.environ["DISCORD_WEBHOOK_URL"],
+              data=json.dumps(payload).encode(),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+
+          with urllib.request.urlopen(request, timeout=10) as response:
+              response.read()
+          PY
