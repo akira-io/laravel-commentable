@@ -17,12 +17,10 @@ final class Reply extends Message
     ];
 
     /**
-     * Get the comment that the reply belongs to.
-     *
-     * @return BelongsTo<Comment, $this>
+     * @return BelongsTo<Message, $this>
      */
     public function comment(): BelongsTo
     {
-        return $this->belongsTo(Comment::class);
+        return $this->belongsTo(self::configuredCommentModel(), 'reply_id', 'id');
     }
 }

@@ -24,6 +24,8 @@ abstract class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
+        $this->defineEnvironment($app);
+
         $migrations = [
             __DIR__.'/../database/migrations',
             __DIR__.'/Fixtures/Migrations',
@@ -35,6 +37,8 @@ abstract class TestCase extends Orchestra
             }
         }
     }
+
+    protected function defineEnvironment($app): void {}
 
     protected function getPackageProviders($app)
     {

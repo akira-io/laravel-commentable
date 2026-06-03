@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create(config('commentable.comment_table', 'comments'), function (Blueprint $table): void {
@@ -35,12 +32,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists(config('commentable.tables.reactions', 'reactions'));
-        Schema::dropIfExists(config('commentable.tables.comments', 'comments'));
+        Schema::dropIfExists(config('commentable.reaction_table', 'reactions'));
+        Schema::dropIfExists(config('commentable.comment_table', 'comments'));
     }
 };
