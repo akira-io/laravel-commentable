@@ -18,3 +18,8 @@
 /UPGRADING.md       export-ignore
 /phpstan.neon.dist  export-ignore
 /phpstan-baseline.neon  export-ignore
+/cliff.toml          export-ignore
+/bun.lock           export-ignore
+/package-lock.json  export-ignore
+/pnpm-lock.yaml     export-ignore
+/yarn.lock          export-ignore

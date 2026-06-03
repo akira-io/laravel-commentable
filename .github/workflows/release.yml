@@ -1,17 +1,70 @@
+name: release
+
 on:
-  release:
-    types: [ published ]
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
-  github-releases-to-discord:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
-      - name: Github Releases To Discord
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Install git-cliff
+        uses: taiki-e/install-action@25435dc8dd3baed7417e0c96d3fe89013a5b2e09
+        with:
+          tool: git-cliff
+
+      - name: Generate CHANGELOG
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: git-cliff --config cliff.toml --tag "${{ github.ref_name }}" --output CHANGELOG.md
+
+      - name: Commit CHANGELOG
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          DEFAULT_BRANCH="$(git remote show origin | sed -n 's/.*HEAD branch: //p')"
+          git add CHANGELOG.md
+          git diff --cached --quiet || git commit -m "chore(changelog): ${{ github.ref_name }}"
+          git push origin "HEAD:${DEFAULT_BRANCH}" || true
+
+      - name: Extract release notes
+        id: notes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo 'body<<EOF'
+            git-cliff --config cliff.toml --latest --strip all
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete "${{ github.ref_name }}" --yes 2>/dev/null || true
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes "${{ steps.notes.outputs.body }}" \
+            --latest
+
+      - name: Send GitHub Release to Discord
         uses: SethCohen/github-releases-to-discord@24d166886aee4646d448c8a389ff9e1ebcab3682
         with:
           webhook_url: ${{ secrets.DISCORD }}
+          release_name: ${{ github.ref_name }}
+          release_body: ${{ steps.notes.outputs.body }}
+          release_html_url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
           color: "2105893"
           username: "Commentable"
           avatar_url: "https://avatars.githubusercontent.com/u/116525492?s=96&v=4"
