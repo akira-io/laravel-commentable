@@ -1,207 +1,106 @@
-# Laravel Commentable
+<p align="center">
+  <img src="assets/banner.svg" alt="Laravel Commentable" />
+</p>
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/akira/laravel-commentable.svg)](https://packagist.org/packages/akira/laravel-commentable)
-[![Total Downloads](https://img.shields.io/packagist/dt/akira/laravel-commentable.svg)](https://packagist.org/packages/akira/laravel-commentable)
-[![PHPStan Level](https://img.shields.io/badge/phpstan-level%209-brightgreen.svg)](https://phpstan.org)
-[![License](https://img.shields.io/packagist/l/akira/laravel-commentable.svg)](https://github.com/akira-io/laravel-commentable/blob/main/LICENSE)
+<p align="center">
+  <a href="https://packagist.org/packages/akira/laravel-commentable"><img src="https://img.shields.io/packagist/v/akira/laravel-commentable.svg" alt="Packagist Version"></a>
+  <a href="https://packagist.org/packages/akira/laravel-commentable"><img src="https://img.shields.io/packagist/dt/akira/laravel-commentable.svg" alt="downloads"></a>
+  <a href="https://github.com/akira-io/laravel-commentable/actions/workflows/run-tests.yml"><img src="https://github.com/akira-io/laravel-commentable/actions/workflows/run-tests.yml/badge.svg" alt="tests"></a>
+  <img src="https://img.shields.io/packagist/l/akira/laravel-commentable.svg" alt="license">
+  <img src="https://img.shields.io/packagist/php-v/akira/laravel-commentable" alt="php">
+</p>
 
-A lightweight and flexible comment system for Laravel applications. Add threaded comments, replies, reactions, and moderation to any Eloquent model with minimal configuration.
+Laravel Commentable is a lightweight comment system for Laravel applications. It adds comments, replies, reactions, and moderation to Eloquent models through small, typed traits.
 
-## Features
+## Install
 
-- **Polymorphic Comments** - Make any model commentable with a single trait
-- **Threaded Replies** - Support for unlimited nested reply depth
-- **Reaction System** - Built-in support for likes, reactions, and custom types
-- **Comment Moderation** - Approval workflow for managing user-generated content
-- **Flexible Authorization** - Customizable permission logic for comment operations
-- **Type Safe** - Full PHP 8.4 type declarations and PHPStan level 9 compliance
-- **Well Tested** - Comprehensive test coverage with Pest PHP
-- **Developer Friendly** - Clean API with extensive documentation
-
-## Requirements
-
-- PHP 8.4 or higher
-- Laravel 12.0 or higher
-
-## Installation
-
-Install the package via Composer:
-
-```bash
+```sh
 composer require akira/laravel-commentable
+```
+
+```json
+{
+  "require": {
+    "akira/laravel-commentable": "^0.1"
+  }
+}
 ```
 
 Publish and run the migrations:
 
-```bash
+```sh
 php artisan vendor:publish --tag="commentable-migrations"
 php artisan migrate
 ```
 
-Optionally, publish the configuration file:
+Publish the config when you need custom table or model classes:
 
-```bash
+```sh
 php artisan vendor:publish --tag="commentable-config"
 ```
 
-## Quick Start
-
-### Make a Model Commentable
-
-Add the `Commentable` trait to any model that should receive comments:
+## Quick start
 
 ```php
 use Akira\Commentable\Concerns\Commentable;
+use Akira\Commentable\Concerns\Commenter;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Post extends Model
+final class Post extends Model
 {
     use Commentable;
 }
-```
 
-### Make a Model a Commenter
-
-Add the `Commenter` trait to models that can create comments (typically your User model):
-
-```php
-use Akira\Commentable\Concerns\Commenter;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-
-class User extends Authenticatable
+final class User extends Authenticatable
 {
     use Commenter;
 }
-```
 
-### Create Comments
+$comment = $user->comment($post, 'Laravel 13 support is ready.');
 
-```php
-$user = User::find(1);
-$post = Post::find(1);
+$reply = $user->reply($comment, 'Confirmed with the package test suite.');
 
-// Create a comment
-$comment = $user->comment($post, 'This is a great post!');
-
-// Reply to a comment
-$reply = $user->reply($comment, 'Thanks for your feedback!');
-
-// Nested replies
-$nestedReply = $user->reply($reply, 'You are welcome!');
-```
-
-### Retrieve Comments
-
-```php
-// Get all comments on a post
-$comments = $post->comments;
-
-// Get only approved comments
-$approvedComments = $post->comments()->where('approved', true)->get();
-
-// Get replies to a comment
-$replies = $comment->replies;
-
-// Get the commenter
-$commenter = $comment->commenter;
-```
-
-### Delete Comments
-
-```php
-// Delete own comment (with authorization check)
-try {
-    $user->deleteComment($comment);
-} catch (\Akira\Commentable\Exceptions\DeleteCommentNotAllowedException $e) {
-    // Handle unauthorized deletion
-}
-
-// Force delete (bypass authorization)
-$user->forceDeleteComment($comment);
-```
-
-### Add Reactions
-
-```php
-use Akira\Commentable\Models\Reaction;
-
-// Create a reaction
-Reaction::create([
-    'comment_id' => $comment->id,
-    'owner_type' => User::class,
-    'owner_id' => $user->id,
-    'type' => 'like',
-]);
-
-// Get reactions
-$reactions = $comment->reactions;
+$post->comments()->where('approved', true)->get();
 ```
 
 ## Documentation
 
-Comprehensive documentation is available at:
-
-**[https://packages.akira-io.com/packages/laravel-commentable](https://packages.akira-io.com/packages/laravel-commentable)**
-
-### Documentation Topics
-
-- [Installation Guide](https://packages.akira-io.com/packages/laravel-commentable/installation)
-- [Basic Usage](https://packages.akira-io.com/packages/laravel-commentable/basic-usage)
-- [Advanced Features](https://packages.akira-io.com/packages/laravel-commentable/advanced-features)
-- [Configuration](https://packages.akira-io.com/packages/laravel-commentable/configuration)
-- [API Reference](https://packages.akira-io.com/packages/laravel-commentable/api-reference)
-- [Database Schema](https://packages.akira-io.com/packages/laravel-commentable/database-schema)
-- [Testing Guide](https://packages.akira-io.com/packages/laravel-commentable/testing)
-- [Code Examples](https://packages.akira-io.com/packages/laravel-commentable/examples)
-- [Troubleshooting](https://packages.akira-io.com/packages/laravel-commentable/troubleshooting)
-
-## Use Cases
-
-Laravel Commentable is perfect for:
-
-- Blog comment systems
-- Forum discussions
-- Product reviews and ratings
-- Ticket and support systems
-- Social media platforms
-- Documentation feedback
-- Q&A platforms
-- Community engagement features
+- [Roadmap](docs/00-roadmap.md)
+- [Installation](docs/01-installation.md)
+- [Basic usage](docs/02-basic-usage.md)
+- [Advanced features](docs/03-advanced-features.md)
+- [Configuration](docs/04-configuration.md)
+- [API reference](docs/05-api-reference.md)
+- [Database schema](docs/06-database-schema.md)
+- [Testing](docs/07-testing.md)
+- [Examples](docs/08-examples.md)
+- [Troubleshooting](docs/09-troubleshooting.md)
+- API reference: https://packages.akira-io.com/packages/laravel-commentable
 
 ## Testing
 
-Run the test suite:
-
-```bash
+```sh
 composer test
-```
-
-Run individual test types:
-
-```bash
-composer test:lint          # Code style
-composer test:types         # Static analysis
-composer test:coverage      # Test coverage
-composer test:type-coverage # Type coverage
 ```
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+Please see [CHANGELOG.md](CHANGELOG.md) for what has changed recently. The changelog is generated from conventional commits via [git-cliff](https://git-cliff.org) on every release tag.
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING](CONTRIBUTING.md) for details on how to contribute to this project.
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability, please review our [Security Policy](SECURITY.md) for information on how to report it responsibly.
+Please review [our security policy](SECURITY.md) on how to report security vulnerabilities.
 
 ## Credits
 
 - [Kidiatoliny](https://github.com/kidiatoliny)
-- [All Contributors](../../contributors)
+- [All Contributors](https://github.com/akira-io/laravel-commentable/graphs/contributors)
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [LICENSE.md](LICENSE.md) for more information.
