@@ -65,7 +65,7 @@ return [
 ];
 ```
 
-**Use case:** Extend the default models with your own implementations.
+**Use case:** Extend the package base models with your own implementations. Custom comment models must extend `Akira\Commentable\Models\Message`; custom reaction models must extend `Akira\Commentable\Models\BaseReaction`.
 
 **Example:**
 
@@ -76,9 +76,9 @@ Create your custom Comment model:
 
 namespace App\Models;
 
-use Akira\Commentable\Models\Comment as BaseComment;
+use Akira\Commentable\Models\Message;
 
-class Comment extends BaseComment
+class Comment extends Message
 {
     protected $appends = ['is_edited', 'excerpt'];
 
@@ -94,27 +94,40 @@ class Comment extends BaseComment
 }
 ```
 
+Create your custom Reaction model:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Akira\Commentable\Models\BaseReaction;
+
+class Reaction extends BaseReaction
+{
+    protected $appends = ['label'];
+
+    public function getLabelAttribute(): string
+    {
+        return str($this->type)->headline();
+    }
+}
+```
+
 Update the configuration:
 
 ```php
 'models' => [
     'comment' => \App\Models\Comment::class,
-    'reaction' => \Akira\Commentable\Models\Reaction::class,
+    'reaction' => \App\Models\Reaction::class,
 ],
 ```
 
-Update the `Commentable` trait usage to reference your custom model in the relationship:
+The package relationships read these configured classes when creating comments and loading reactions:
 
 ```php
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-
-trait Commentable
-{
-    public function comments(): MorphMany
-    {
-        return $this->morphMany(config('commentable.models.comment'), 'commentable');
-    }
-}
+$post->comments()->create([...]);     // App\Models\Comment
+$comment->reactions()->create([...]); // App\Models\Reaction
 ```
 
 ## Complete Configuration File

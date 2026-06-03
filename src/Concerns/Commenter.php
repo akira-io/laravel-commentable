@@ -6,7 +6,7 @@ namespace Akira\Commentable\Concerns;
 
 use Akira\Commentable\Contracts\CommentContract;
 use Akira\Commentable\Exceptions\DeleteCommentNotAllowedException;
-use Akira\Commentable\Models\Comment;
+use Akira\Commentable\Models\Message;
 use Akira\Commentable\Models\Reply;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait Commenter
 {
     /**
-     * Get the comments for the model.
-     *
-     * @return MorphMany<Comment, Commenter>
+     * @return MorphMany<Message, Commenter>
      */
     public function comments(): MorphMany
     {
@@ -27,8 +25,6 @@ trait Commenter
     }
 
     /**
-     * Get the replies for the model.
-     *
      * @return HasMany<Reply, Commenter>
      */
     public function replies(): HasMany
@@ -38,8 +34,6 @@ trait Commenter
     }
 
     /**
-     * The name of the commenter.
-     *
      * @throws Exception
      */
     public function comment(Model $model, string $comment): CommentContract
@@ -51,17 +45,15 @@ trait Commenter
     }
 
     /**
-     * Reply to a comment
+     * @phpstan-return CommentContract
      */
-    public function reply(Comment|Reply $comment, string $reply): CommentContract
+    public function reply(Message $comment, string $reply): CommentContract
     {
 
         return $comment->replies()->create($this->prepareCommentData($reply));
     }
 
     /**
-     * Delete a comment
-     *
      * @throws DeleteCommentNotAllowedException
      */
     public function deleteComment(CommentContract $comment): void
@@ -75,7 +67,7 @@ trait Commenter
     }
 
     /**
-     * Approve comment deletion
+     * @phpstan-return bool
      */
     public function approveCommentDeletion(CommentContract $comment): bool
     {
@@ -84,19 +76,15 @@ trait Commenter
     }
 
     /**
-     * force delete a comment
-     *
      * @throws Exception
      */
-    public function forceDeleteComment(Comment|Reply $comment): ?bool
+    public function forceDeleteComment(Message $comment): ?bool
     {
 
         return $comment->delete();
     }
 
     /**
-     * Force delete a comment
-     *
      * @throws Exception
      */
     private function requireCommentableTrait(Model $model): void
@@ -108,7 +96,7 @@ trait Commenter
     }
 
     /**
-     * Prepare the comment data
+     * @return array<string, mixed>
      */
     private function prepareCommentData(string $comment): array
     {

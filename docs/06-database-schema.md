@@ -227,6 +227,13 @@ Schema::create(config('commentable.reaction_table', 'reactions'), function (Blue
 });
 ```
 
+Rollback uses the same configured table names:
+
+```php
+Schema::dropIfExists(config('commentable.reaction_table', 'reactions'));
+Schema::dropIfExists(config('commentable.comment_table', 'comments'));
+```
+
 ---
 
 ## Query Examples
