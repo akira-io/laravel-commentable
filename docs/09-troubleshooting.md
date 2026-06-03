@@ -442,6 +442,14 @@ return $this->morphMany(config('commentable.models.comment'), 'commentable');
 
 ---
 
+## Release Workflow Checks
+
+The release workflow pins third-party actions to commit SHAs. When GitHub deprecates a JavaScript runtime, update the upstream action tag, resolve the tag to a commit SHA, and replace the pinned SHA in the workflow. If no compatible action exists, use a shell step instead of a JavaScript action.
+
+The changelog commit step must fail when the push fails. A failed changelog push means the release automation needs attention before the next tag.
+
+---
+
 ## Getting Help
 
 If you encounter issues not covered here:
