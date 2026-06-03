@@ -21,7 +21,7 @@ composer require akira/laravel-commentable
 ```json
 {
   "require": {
-    "akira/laravel-commentable": "^0.1"
+    "akira/laravel-commentable": "^0.2"
   }
 }
 ```

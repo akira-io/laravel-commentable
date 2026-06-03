@@ -6,7 +6,7 @@
         "laravel",
         "commentable"
     ],
-    "homepage": "https://github.com/akira-io/commentable",
+    "homepage": "https://github.com/akira-io/laravel-commentable",
     "license": "MIT",
     "authors": [
         {
