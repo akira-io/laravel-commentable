@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 final class Reaction extends Model
 {
     /**
-     * The attributes that are mass assignable.
-     *
      * @var list<string>
      */
     protected $fillable = [
@@ -23,25 +21,54 @@ final class Reaction extends Model
     ];
 
     /**
-     * Get the table associated with the model.
-     *
      * @return BelongsTo<Model, $this> *
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(
-            config('auth.providers.users.model'),
-            config('commentable', 'user_id')
-        );
+        return $this->belongsTo($this->configuredUserModel(), 'owner_id', 'id');
     }
 
     /**
-     * Get the owner of the reaction.
-     *
      * @return MorphTo<Model, $this>
      */
     public function owner(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @return BelongsTo<Comment, $this>
+     */
+    public function comment(): BelongsTo
+    {
+        return $this->belongsTo($this->configuredCommentModel(), 'comment_id', 'id');
+    }
+
+    /**
+     * @return class-string<Model>
+     */
+    private function configuredUserModel(): string
+    {
+        $model = config('auth.providers.users.model');
+
+        if (is_string($model) && is_a($model, Model::class, true)) {
+            return $model;
+        }
+
+        return Model::class;
+    }
+
+    /**
+     * @return class-string<Comment>
+     */
+    private function configuredCommentModel(): string
+    {
+        $model = config('commentable.models.comment', Comment::class);
+
+        if (is_string($model) && is_a($model, Comment::class, true)) {
+            return $model;
+        }
+
+        return Comment::class;
     }
 }

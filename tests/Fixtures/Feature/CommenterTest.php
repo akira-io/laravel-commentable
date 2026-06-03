@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Akira\Commentable\Exceptions\DeleteCommentNotAllowedException;
+use Akira\Commentable\Models\Comment;
+use Akira\Commentable\Models\Reaction;
 use Akira\Commentable\Tests\Fixtures\Post;
 
 beforeEach(function (): void {
@@ -18,7 +20,7 @@ it(/**
     $comment = $this->user->comment($post, 'comment1');
 
     expect($comment)
-        ->toBeInstanceOf(Akira\Commentable\Models\Comment::class)
+        ->toBeInstanceOf(Comment::class)
         ->and($post->comments)
         ->toHaveCount(1)
         ->first()
@@ -186,4 +188,29 @@ it('should delete a reply to a reply if your the post owner', function (): void 
         ->and($reply->replies)
         ->toHaveCount(0);
 
+});
+
+it('should resolve reaction relationships', function (): void {
+
+    config()->set('auth.providers.users.model', $this->user::class);
+
+    $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
+
+    $comment = $this->user->comment($post, 'comment1');
+
+    $reaction = Reaction::query()->create([
+        'comment_id' => $comment->id,
+        'owner_type' => $this->user::class,
+        'owner_id' => $this->user->id,
+        'type' => 'like',
+    ]);
+
+    expect($reaction->owner)
+        ->toBeInstanceOf($this->user::class)
+        ->and($reaction->user)
+        ->toBeInstanceOf($this->user::class)
+        ->and($reaction->comment)
+        ->toBeInstanceOf(Comment::class)
+        ->and($comment->reactions)
+        ->toHaveCount(1);
 });

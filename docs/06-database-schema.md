@@ -155,8 +155,11 @@ $comment->commenter; // The user who created this comment
 // User has many reactions
 $user->morphMany(Reaction::class, 'owner');
 
-// Reaction belongs to user
+// Preferred reaction owner relation
 $reaction->owner; // The user who created this reaction
+
+// Backward-compatible user relation
+$reaction->user;
 ```
 
 ### Standard Relationships
