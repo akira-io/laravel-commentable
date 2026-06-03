@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1](https://github.com/akira-io/laravel-commentable/compare/v0.2.0...v0.2.1) (2026-06-03)
+
+### Bug Fixes
+
+- **package:** Resolve reaction relationships ([22f61ee](https://github.com/akira-io/laravel-commentable/commit/22f61eee3bef2e9f7892e46519b0998993930fd8))
+- **package:** Honor commentable model configuration ([2e078e7](https://github.com/akira-io/laravel-commentable/commit/2e078e7084160b1efd99874bbf80fb96254e1287))
+- **package:** Resolve reaction relationship conflicts ([45840fd](https://github.com/akira-io/laravel-commentable/commit/45840fd3be1757bf83d60454deade3a6ac1ba6d4))
+
 ## [0.2.0](https://github.com/akira-io/laravel-commentable/compare/0.1.0...v0.2.0) (2026-06-03)
 
 ### Features
