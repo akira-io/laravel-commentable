@@ -19,7 +19,7 @@ abstract class Message extends Model implements CommentContract
     ];
 
     /**
-     * Get the table associated with the model.
+     * @param  array<string, mixed>  $attributes
      */
     public function __construct(array $attributes = [])
     {
@@ -29,8 +29,6 @@ abstract class Message extends Model implements CommentContract
     }
 
     /**
-     * Get the user that the comment belongs to.
-     *
      * @return MorphTo<Model, $this>
      */
     final public function commenter(): MorphTo
@@ -39,19 +37,15 @@ abstract class Message extends Model implements CommentContract
     }
 
     /**
-     * Get the reactions for the comment.
-     *
-     * @return HasMany<Reaction, $this>
+     * @return HasMany<BaseReaction, $this>
      */
     final public function reactions(): HasMany
     {
-        return $this->hasMany(Reaction::class, 'comment_id', 'id');
+        return $this->hasMany(self::configuredReactionModel(), 'comment_id', 'id');
 
     }
 
     /**
-     * Get the user  commenting the comment.
-     *
      * @return HasMany<Reply, $this>
      */
     final public function replies(): HasMany
@@ -60,8 +54,34 @@ abstract class Message extends Model implements CommentContract
     }
 
     /**
-     * The attributes that should be cast to native types.
-     *
+     * @return class-string<Message>
+     */
+    final protected static function configuredCommentModel(): string
+    {
+        $model = config('commentable.models.comment', Comment::class);
+
+        if (is_string($model) && is_a($model, self::class, true)) {
+            return $model;
+        }
+
+        return Comment::class;
+    }
+
+    /**
+     * @return class-string<BaseReaction>
+     */
+    final protected static function configuredReactionModel(): string
+    {
+        $model = config('commentable.models.reaction', Reaction::class);
+
+        if (is_string($model) && is_a($model, BaseReaction::class, true)) {
+            return $model;
+        }
+
+        return Reaction::class;
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

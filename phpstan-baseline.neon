@@ -53,21 +53,3 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: src/Models/Message.php
-
-		-
-			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Models/Reaction.php
-
-		-
-			message: '#^Parameter \#2 \$foreignKey of method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Models/Reaction.php
-
-		-
-			message: '#^Unable to resolve the template type TRelatedModel in call to method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\)$#'
-			identifier: argument.templateType
-			count: 1
-			path: src/Models/Reaction.php
