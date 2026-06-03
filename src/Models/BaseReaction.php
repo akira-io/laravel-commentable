@@ -36,10 +36,7 @@ abstract class BaseReaction extends Model
      */
     final public function user(): BelongsTo
     {
-        return $this->belongsTo(
-            $this->configuredUserModel(),
-            $this->configuredUserForeignKey()
-        );
+        return $this->belongsTo($this->configuredUserModel(), 'owner_id', 'id');
     }
 
     /**
@@ -48,6 +45,14 @@ abstract class BaseReaction extends Model
     final public function owner(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @return BelongsTo<Message, $this>
+     */
+    final public function comment(): BelongsTo
+    {
+        return $this->belongsTo($this->configuredCommentModel(), 'comment_id', 'id');
     }
 
     /**
@@ -65,16 +70,16 @@ abstract class BaseReaction extends Model
     }
 
     /**
-     * @phpstan-return non-empty-string
+     * @return class-string<Message>
      */
-    private function configuredUserForeignKey(): string
+    private function configuredCommentModel(): string
     {
-        $foreignKey = config('commentable.user_foreign_key', 'user_id');
+        $model = config('commentable.models.comment', Comment::class);
 
-        if (is_string($foreignKey) && $foreignKey !== '') {
-            return $foreignKey;
+        if (is_string($model) && is_a($model, Message::class, true)) {
+            return $model;
         }
 
-        return 'user_id';
+        return Comment::class;
     }
 }

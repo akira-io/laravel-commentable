@@ -346,7 +346,7 @@ Represents a reaction (like, love, etc.) to a comment.
 
 ##### `user(): BelongsTo`
 
-Returns the user relationship (for backward compatibility).
+Returns the user relationship for backward compatibility. Prefer `owner()` for new code.
 
 ```php
 public function user(): BelongsTo
@@ -356,6 +356,22 @@ public function user(): BelongsTo
 ```php
 $reaction = Reaction::find(1);
 $user = $reaction->user;
+```
+
+---
+
+##### `comment(): BelongsTo`
+
+Returns the comment or reply this reaction belongs to.
+
+```php
+public function comment(): BelongsTo
+```
+
+**Example:**
+```php
+$reaction = Reaction::find(1);
+$comment = $reaction->comment;
 ```
 
 ---
