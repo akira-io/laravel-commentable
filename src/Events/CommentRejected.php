@@ -12,7 +12,7 @@ final class CommentRejected
     use SerializesModels;
 
     /**
-     * @return void
+     * @phpstan-return void
      */
     public function __construct(public Message $comment) {}
 }
