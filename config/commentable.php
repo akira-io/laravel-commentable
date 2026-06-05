@@ -8,15 +8,8 @@ return [
 
     'reaction_table' => 'reactions',
 
-    /*
-  |--------------------------------------------------------------------------
-  | User Foreign Key
-  |--------------------------------------------------------------------------
-  |
-  | This is the name of the foreign key column in the followables table that
-  | will reference the user model. By default, it is set to 'user_id'.
-  |
-  */
+    'revision_table' => 'comment_revisions',
+
     'user_foreign_key' => 'user_id',
 
     'models' => [

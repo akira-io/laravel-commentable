@@ -84,7 +84,7 @@ trait Commenter
             throw new DeleteCommentNotAllowedException();
         }
 
-        return $comment->delete();
+        return $comment->forceDelete();
     }
 
     /**
