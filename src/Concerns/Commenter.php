@@ -76,12 +76,24 @@ trait Commenter
     }
 
     /**
-     * @throws Exception
+     * @throws DeleteCommentNotAllowedException
      */
     public function forceDeleteComment(Message $comment): ?bool
     {
+        if (! $this->approveForcedCommentDeletion($comment)) {
+            throw new DeleteCommentNotAllowedException();
+        }
 
         return $comment->delete();
+    }
+
+    /**
+     * @phpstan-return bool
+     */
+    public function approveForcedCommentDeletion(CommentContract $comment): bool
+    {
+
+        return $this->approveCommentDeletion($comment);
     }
 
     /**

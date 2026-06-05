@@ -181,28 +181,53 @@ if ($user->approveCommentDeletion($comment)) {
 
 ---
 
-##### `forceDeleteComment(Comment|Reply $comment): ?bool`
+##### `forceDeleteComment(Message $comment): ?bool`
 
-Force deletes a comment, bypassing authorization checks.
+Deletes a comment after `approveForcedCommentDeletion()` allows the action.
 
 ```php
-public function forceDeleteComment(Comment|Reply $comment): ?bool
+public function forceDeleteComment(Message $comment): ?bool
 ```
 
 **Parameters:**
-- `$comment` - The comment or reply to delete
+- `$comment` - The message to delete
 
 **Returns:** `?bool` - Result of the delete operation
 
-**Throws:** `Exception` - If delete operation fails
+**Throws:** `DeleteCommentNotAllowedException` - If user is not authorized to force delete the comment
 
 **Example:**
 ```php
 $admin = User::find(1);
 $comment = Comment::find(1);
 
-$admin->forceDeleteComment($comment); // Deletes regardless of ownership
+$admin->forceDeleteComment($comment);
 ```
+
+---
+
+##### `approveForcedCommentDeletion(CommentContract $comment): bool`
+
+Determines if the user can force delete a comment.
+
+```php
+public function approveForcedCommentDeletion(CommentContract $comment): bool
+```
+
+**Parameters:**
+- `$comment` - The comment to check
+
+**Returns:** `bool` - True if forced deletion is allowed, false otherwise
+
+**Example:**
+```php
+public function approveForcedCommentDeletion(CommentContract $comment): bool
+{
+    return $this->isModerator();
+}
+```
+
+**Note:** The default implementation falls back to `approveCommentDeletion()`.
 
 ---
 
