@@ -149,10 +149,10 @@ test('user cannot delete another users comment', function () {
 })->throws(DeleteCommentNotAllowedException::class);
 ```
 
-### Force Delete Bypasses Authorization
+### Force Delete Requires Explicit Approval
 
 ```php
-test('force delete bypasses authorization checks', function () {
+test('force delete rejects unauthorized users', function () {
     $user1 = User::create(['name' => 'John Doe']);
     $user2 = User::create(['name' => 'Jane Smith']);
     $post = Post::create(['title' => 'Test Post']);
@@ -160,9 +160,7 @@ test('force delete bypasses authorization checks', function () {
     $comment = $user1->comment($post, 'Johns comment');
     
     $user2->forceDeleteComment($comment);
-
-    expect($post->comments()->count())->toBe(0);
-});
+})->throws(DeleteCommentNotAllowedException::class);
 ```
 
 ## Testing Reactions

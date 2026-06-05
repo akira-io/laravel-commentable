@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Akira\Commentable\Exceptions\DeleteCommentNotAllowedException;
 use Akira\Commentable\Models\Comment;
 use Akira\Commentable\Models\Reaction;
+use Akira\Commentable\Tests\Fixtures\ModeratorUser;
 use Akira\Commentable\Tests\Fixtures\Post;
 
 beforeEach(function (): void {
@@ -139,37 +140,39 @@ it('should not delete a reply that does not belongs to the user', function (): v
 
 });
 
-it('should delete a comment if your the post owner', function (): void {
+it('should not force delete a comment without approval', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
     $comment = user()->comment($post, 'comment1');
 
-    $this->user->forceDeleteComment($comment);
+    expect(fn () => $this->user->forceDeleteComment($comment))
+        ->toThrow(DeleteCommentNotAllowedException::class);
 
     expect($post->comments)
-        ->toHaveCount(0);
+        ->toHaveCount(1);
 
 });
 
-it('should delete a reply if your the post owner', function (): void {
+it('should force delete a comment through explicit approval', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
-    $comment = $this->user->comment($post, 'comment1');
+    $comment = user()->comment($post, 'comment1');
 
-    $reply = user()->reply($comment, 'reply1');
+    $moderator = ModeratorUser::query()->create([
+        'name' => 'moderator',
+        'email' => 'moderator@example.com',
+    ]);
 
-    $this->user->forceDeleteComment($reply);
+    $moderator->forceDeleteComment($comment);
 
     expect($post->comments)
-        ->toHaveCount(1)
-        ->and($comment->replies)
         ->toHaveCount(0);
 
 });
 
-it('should delete a reply to a reply if your the post owner', function (): void {
+it('should force delete a nested reply through explicit approval', function (): void {
 
     $post = Post::query()->create(['name' => 'post1', 'user_id' => $this->user->id]);
 
@@ -179,7 +182,12 @@ it('should delete a reply to a reply if your the post owner', function (): void 
 
     $reply2 = user()->reply($reply, 'reply2');
 
-    $this->user->forceDeleteComment($reply2);
+    $moderator = ModeratorUser::query()->create([
+        'name' => 'moderator',
+        'email' => 'moderator@example.com',
+    ]);
+
+    $moderator->forceDeleteComment($reply2);
 
     expect($post->comments)
         ->toHaveCount(1)

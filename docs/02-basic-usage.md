@@ -125,16 +125,20 @@ The `deleteComment()` method:
 - Throws `DeleteCommentNotAllowedException` if the user doesn't own the comment
 - Soft or hard deletes based on your model configuration
 
-### Force Delete Any Comment
+### Force Delete With Explicit Approval
 
 ```php
-$user = User::find(1); // Admin or post owner
+$user = User::find(1);
 $comment = Comment::find(1);
 
-$user->forceDeleteComment($comment);
+try {
+    $user->forceDeleteComment($comment);
+} catch (\Akira\Commentable\Exceptions\DeleteCommentNotAllowedException $e) {
+    // User is not authorized to force delete this comment
+}
 ```
 
-Use `forceDeleteComment()` when you need to bypass ownership checks (e.g., moderators deleting inappropriate content).
+`forceDeleteComment()` calls `approveForcedCommentDeletion()` before deleting. Override that method on your commenter model when moderators or post owners need a separate deletion path.
 
 ## Relationships
 
