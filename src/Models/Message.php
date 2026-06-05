@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Akira\Commentable\Models;
 
 use Akira\Commentable\Contracts\CommentContract;
+use Akira\Commentable\Events\CommentApproved;
+use Akira\Commentable\Events\CommentRejected;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property bool $approved
+ */
 abstract class Message extends Model implements CommentContract
 {
     protected $fillable = [
@@ -26,6 +32,42 @@ abstract class Message extends Model implements CommentContract
         $this->table = config('commentable.comment_table', 'comments');
 
         parent::__construct($attributes);
+    }
+
+    /**
+     * @param  iterable<array-key, Message>  $comments
+     *
+     * @phpstan-return int
+     */
+    final public static function approveMany(iterable $comments): int
+    {
+        $approvedCount = 0;
+
+        foreach ($comments as $comment) {
+            if ($comment->approve()) {
+                $approvedCount++;
+            }
+        }
+
+        return $approvedCount;
+    }
+
+    /**
+     * @param  iterable<array-key, Message>  $comments
+     *
+     * @phpstan-return int
+     */
+    final public static function rejectMany(iterable $comments): int
+    {
+        $rejectedCount = 0;
+
+        foreach ($comments as $comment) {
+            if ($comment->reject()) {
+                $rejectedCount++;
+            }
+        }
+
+        return $rejectedCount;
     }
 
     /**
@@ -51,6 +93,60 @@ abstract class Message extends Model implements CommentContract
     final public function replies(): HasMany
     {
         return $this->hasMany(Reply::class, 'reply_id', 'id');
+    }
+
+    /**
+     * @phpstan-return bool
+     */
+    final public function approve(): bool
+    {
+        $approved = $this->forceFill(['approved' => true])->save();
+
+        if ($approved) {
+            event(new CommentApproved($this));
+        }
+
+        return $approved;
+    }
+
+    /**
+     * @phpstan-return bool
+     */
+    final public function reject(): bool
+    {
+        $rejected = $this->markPending();
+
+        if ($rejected) {
+            event(new CommentRejected($this));
+        }
+
+        return $rejected;
+    }
+
+    /**
+     * @phpstan-return bool
+     */
+    final public function markPending(): bool
+    {
+        return $this->forceFill(['approved' => false])->save();
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    final public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('approved', true);
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    final public function scopePending(Builder $query): Builder
+    {
+        return $query->where('approved', false);
     }
 
     /**
