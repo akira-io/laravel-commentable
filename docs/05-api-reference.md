@@ -386,6 +386,127 @@ $replies = $comment->replies; // All replies to this comment
 
 ---
 
+##### `approve(): bool`
+
+Marks a comment or reply as approved and dispatches `CommentApproved`.
+
+```php
+final public function approve(): bool
+```
+
+**Returns:** `bool` - Result of the save operation
+
+**Example:**
+```php
+$comment = Comment::find(1);
+
+$comment->approve();
+```
+
+---
+
+##### `reject(): bool`
+
+Marks a comment or reply as pending and dispatches `CommentRejected`.
+
+```php
+final public function reject(): bool
+```
+
+**Returns:** `bool` - Result of the save operation
+
+**Example:**
+```php
+$comment = Comment::find(1);
+
+$comment->reject();
+```
+
+---
+
+##### `markPending(): bool`
+
+Marks a comment or reply as pending without dispatching a rejection event.
+
+```php
+final public function markPending(): bool
+```
+
+**Returns:** `bool` - Result of the save operation
+
+**Example:**
+```php
+$comment = Comment::find(1);
+
+$comment->markPending();
+```
+
+---
+
+##### `scopeApproved(Builder $query): Builder`
+
+Filters approved comments or replies.
+
+```php
+final public function scopeApproved(Builder $query): Builder
+```
+
+**Example:**
+```php
+$approvedComments = Comment::approved()->get();
+```
+
+---
+
+##### `scopePending(Builder $query): Builder`
+
+Filters pending comments or replies.
+
+```php
+final public function scopePending(Builder $query): Builder
+```
+
+**Example:**
+```php
+$pendingComments = Comment::pending()->get();
+```
+
+---
+
+##### `approveMany(iterable $comments): int`
+
+Approves each message in an iterable and returns the number of successful saves.
+
+```php
+final public static function approveMany(iterable $comments): int
+```
+
+**Example:**
+```php
+$comments = Comment::pending()->get();
+
+Comment::approveMany($comments);
+```
+
+---
+
+##### `rejectMany(iterable $comments): int`
+
+Rejects each message in an iterable and returns the number of successful saves.
+
+```php
+final public static function rejectMany(iterable $comments): int
+```
+
+**Example:**
+```php
+$comments = Comment::approved()->get();
+
+Comment::rejectMany($comments);
+```
+
+---
+
 ### Comment
 
 **Namespace:** `Akira\Commentable\Models\Comment`
@@ -541,6 +662,26 @@ try {
     return response()->json(['error' => $e->getMessage()], 403);
 }
 ```
+
+## Events
+
+### CommentApproved
+
+**Namespace:** `Akira\Commentable\Events\CommentApproved`
+
+Dispatched after `Message::approve()` saves an approved state.
+
+**Properties:**
+- `comment` - The approved `Message`
+
+### CommentRejected
+
+**Namespace:** `Akira\Commentable\Events\CommentRejected`
+
+Dispatched after `Message::reject()` saves a pending state.
+
+**Properties:**
+- `comment` - The rejected `Message`
 
 ---
 
