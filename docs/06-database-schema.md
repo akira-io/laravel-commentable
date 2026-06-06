@@ -22,6 +22,7 @@ Stores all comments and replies in a single table using a self-referencing struc
 | `approved` | boolean | No | Yes | Moderation flag (default: false) |
 | `created_at` | timestamp | Yes | No | Creation timestamp |
 | `updated_at` | timestamp | Yes | No | Last update timestamp |
+| `deleted_at` | timestamp | Yes | No | Soft delete timestamp |
 
 #### Indexes
 
@@ -34,6 +35,36 @@ Stores all comments and replies in a single table using a self-referencing struc
 #### Foreign Keys
 
 - `reply_id` references `id` on `comments` table with cascade on delete
+
+---
+
+### comment_revisions
+
+Stores edit history for comments and replies.
+
+#### Columns
+
+| Column | Type | Nullable | Indexed | Description |
+|--------|------|----------|---------|-------------|
+| `id` | bigInteger | No | Primary | Auto-incrementing primary key |
+| `comment_id` | bigInteger | No | Foreign | Foreign key to comments table |
+| `editor_type` | string | Yes | Yes | Polymorphic type of the editing model |
+| `editor_id` | bigInteger | Yes | Yes | Polymorphic ID of the editing model |
+| `previous_content` | longText | No | No | Content before the edit |
+| `new_content` | longText | No | No | Content after the edit |
+| `reason` | text | Yes | No | Optional moderation reason |
+| `created_at` | timestamp | Yes | No | Revision timestamp |
+| `updated_at` | timestamp | Yes | No | Last update timestamp |
+
+#### Indexes
+
+- Primary key on `id`
+- Foreign key index on `comment_id`
+- Composite index on `editor_type` and `editor_id` (polymorphic)
+
+#### Foreign Keys
+
+- `comment_id` references `id` on `comments` table with cascade on delete
 
 #### Usage
 

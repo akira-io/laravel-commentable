@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Akira\Commentable\Models;
 
+use Akira\Commentable\Concerns\HasCommentRecovery;
 use Akira\Commentable\Contracts\CommentContract;
 use Akira\Commentable\Events\CommentApproved;
 use Akira\Commentable\Events\CommentRejected;
@@ -14,9 +15,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property bool $approved
+ * @property string $content
  */
 abstract class Message extends Model implements CommentContract
 {
+    use HasCommentRecovery;
+
     protected $fillable = [
         'content',
         'commenter_type',
@@ -29,7 +33,7 @@ abstract class Message extends Model implements CommentContract
      */
     public function __construct(array $attributes = [])
     {
-        $this->table = config('commentable.comment_table', 'comments');
+        $this->table = self::commentTable();
 
         parent::__construct($attributes);
     }
@@ -185,6 +189,7 @@ abstract class Message extends Model implements CommentContract
 
         return [
             'approved' => 'boolean',
+            'deleted_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

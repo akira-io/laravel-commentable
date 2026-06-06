@@ -121,6 +121,59 @@ $pending = Comment::pending()
     ->paginate(20);
 ```
 
+## Soft Deletes and Recovery
+
+Fresh installs include a `deleted_at` column on the comments table. When that column exists, `deleteComment()` soft deletes comments and replies so they can be recovered.
+
+```php
+$user->deleteComment($comment);
+
+$deletedComment = Comment::withTrashed()->find($comment->id);
+$deletedComment->restore();
+```
+
+`forceDeleteComment()` performs a hard delete. Use it for moderation flows that must permanently remove content after review.
+
+```php
+$moderator->forceDeleteComment($comment);
+```
+
+Existing installations can enable recovery by adding a nullable `deleted_at` timestamp to the configured comment table.
+
+```php
+Schema::table(config('commentable.comment_table', 'comments'), function (Blueprint $table): void {
+    $table->softDeletes();
+});
+```
+
+## Revision History
+
+Use `edit()` to update content and retain the previous value, editor, timestamp, and optional reason.
+
+```php
+$comment->edit(
+    content: 'Updated content',
+    editor: $moderator,
+    reason: 'Removed personal information',
+);
+
+$revisions = $comment->revisions()->latest()->get();
+```
+
+Existing installations can enable revision history by creating the configured revision table.
+
+```php
+Schema::create(config('commentable.revision_table', 'comment_revisions'), function (Blueprint $table): void {
+    $table->id();
+    $table->foreignId('comment_id')->constrained(config('commentable.comment_table', 'comments'))->cascadeOnDelete();
+    $table->nullableMorphs('editor');
+    $table->longText('previous_content');
+    $table->longText('new_content');
+    $table->text('reason')->nullable();
+    $table->timestamps();
+});
+```
+
 ### Moderation Events
 
 The package dispatches `CommentApproved` after `approve()` and `CommentRejected` after `reject()`:

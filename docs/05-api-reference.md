@@ -186,7 +186,7 @@ if ($user->approveCommentDeletion($comment)) {
 
 ##### `forceDeleteComment(Message $comment): ?bool`
 
-Deletes a comment after `approveForcedCommentDeletion()` allows the action.
+Permanently deletes a comment after `approveForcedCommentDeletion()` allows the action.
 
 ```php
 public function forceDeleteComment(Message $comment): ?bool
@@ -382,6 +382,68 @@ final public function replies(): HasMany
 ```php
 $comment = Comment::find(1);
 $replies = $comment->replies; // All replies to this comment
+```
+
+---
+
+##### `revisions(): HasMany`
+
+Returns edit revisions recorded for this comment or reply.
+
+```php
+final public function revisions(): HasMany
+```
+
+**Returns:** `HasMany<CommentRevision>` - Collection of edit revisions
+
+**Example:**
+```php
+$comment = Comment::find(1);
+$revisions = $comment->revisions;
+```
+
+---
+
+##### `edit(string $content, ?Model $editor = null, ?string $reason = null): bool`
+
+Updates comment or reply content and records the previous content as a revision.
+
+```php
+final public function edit(string $content, ?Model $editor = null, ?string $reason = null): bool
+```
+
+**Parameters:**
+- `$content` - New comment or reply content
+- `$editor` - Optional model that edited the content
+- `$reason` - Optional moderation or audit reason
+
+**Returns:** `bool` - Result of the edit operation
+
+**Example:**
+```php
+$comment = Comment::find(1);
+$moderator = User::find(1);
+
+$comment->edit('Updated content', $moderator, 'Removed personal information');
+```
+
+---
+
+##### `restore(): bool`
+
+Restores a soft-deleted comment or reply when the `deleted_at` column is present.
+
+```php
+public function restore(): bool
+```
+
+**Returns:** `bool` - True when the comment was restored, false when soft deletes are not enabled
+
+**Example:**
+```php
+$comment = Comment::withTrashed()->find(1);
+
+$comment->restore();
 ```
 
 ---
@@ -618,6 +680,37 @@ public function owner(): MorphTo
 ```php
 $reaction = Reaction::find(1);
 $owner = $reaction->owner; // User or other model that created the reaction
+```
+
+---
+
+### CommentRevision
+
+**Namespace:** `Akira\Commentable\Models\CommentRevision`
+
+Represents one content edit for a comment or reply.
+
+#### Properties
+
+**Fillable:**
+Uses guarded mass assignment so revisions can store editor metadata and content snapshots.
+
+#### Methods
+
+##### `comment(): BelongsTo`
+
+Returns the comment model associated with the revision.
+
+```php
+public function comment(): BelongsTo
+```
+
+##### `editor(): MorphTo`
+
+Returns the model that edited the comment, when provided.
+
+```php
+public function editor(): MorphTo
 ```
 
 ---
