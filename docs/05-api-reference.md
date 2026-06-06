@@ -77,7 +77,7 @@ $userReplies = $user->replies; // All replies by this user
 
 ##### `comment(Model $model, string $comment): CommentContract`
 
-Creates a comment on a commentable model.
+Creates a comment on a commentable model. If the `commentable.comment` Gate is defined, it must allow the action. If that Gate is not defined, a Laravel policy registered for the target model can allow or deny the `comment` ability.
 
 ```php
 public function comment(Model $model, string $comment): CommentContract
@@ -90,6 +90,7 @@ public function comment(Model $model, string $comment): CommentContract
 **Returns:** `CommentContract` - The created comment instance
 
 **Throws:** `Exception` - If the model doesn't use the `Commentable` trait
+**Throws:** `AuthorizationException` - If the configured Gate or policy denies the action
 
 **Example:**
 ```php
@@ -103,7 +104,7 @@ $comment = $user->comment($post, 'Great article!');
 
 ##### `reply(Comment|Reply $comment, string $reply): CommentContract`
 
-Creates a reply to a comment or another reply.
+Creates a reply to a comment or another reply. If the `commentable.reply` Gate is defined, it must allow the action. If that Gate is not defined, a Laravel policy registered for the message can allow or deny the `reply` ability.
 
 ```php
 public function reply(Comment|Reply $comment, string $reply): CommentContract
@@ -114,6 +115,8 @@ public function reply(Comment|Reply $comment, string $reply): CommentContract
 - `$reply` - The reply content
 
 **Returns:** `CommentContract` - The created reply instance
+
+**Throws:** `AuthorizationException` - If the configured Gate or policy denies the action
 
 **Example:**
 ```php
@@ -127,7 +130,7 @@ $reply = $user->reply($comment, 'Thanks for sharing!');
 
 ##### `deleteComment(CommentContract $comment): void`
 
-Deletes a comment if the user is authorized.
+Deletes a comment if the user is authorized. The `commentable.delete` Gate is used first when registered. If no package Gate exists, a message policy `delete` method is used when available. If neither exists, `approveCommentDeletion()` keeps the default ownership check.
 
 ```php
 public function deleteComment(CommentContract $comment): void
@@ -177,7 +180,7 @@ if ($user->approveCommentDeletion($comment)) {
 }
 ```
 
-**Note:** Override this method to implement custom authorization logic.
+**Note:** Override this method to implement custom authorization logic when you are not using Gates or policies.
 
 ---
 
@@ -208,7 +211,7 @@ $admin->forceDeleteComment($comment);
 
 ##### `approveForcedCommentDeletion(CommentContract $comment): bool`
 
-Determines if the user can force delete a comment.
+Determines if the user can force delete a comment. The `commentable.forceDelete` Gate is used first when registered. If no package Gate exists, a message policy `forceDelete` method is used when available. If neither exists, the method falls back to `approveCommentDeletion()`.
 
 ```php
 public function approveForcedCommentDeletion(CommentContract $comment): bool
@@ -228,6 +231,87 @@ public function approveForcedCommentDeletion(CommentContract $comment): bool
 ```
 
 **Note:** The default implementation falls back to `approveCommentDeletion()`.
+
+---
+
+##### `approveComment(Message $comment): bool`
+
+Marks a comment or reply as approved after authorization. If the `commentable.approve` Gate is defined, it must allow the action. If that Gate is not defined, a Laravel policy registered for the message can allow or deny the `approve` ability.
+
+```php
+public function approveComment(Message $comment): bool
+```
+
+**Parameters:**
+- `$comment` - The message to approve
+
+**Returns:** `bool` - Result of the save operation
+
+**Throws:** `AuthorizationException` - If the configured Gate or policy denies the action
+
+**Example:**
+```php
+$moderator = User::find(1);
+$comment = Comment::find(1);
+
+$moderator->approveComment($comment);
+```
+
+---
+
+##### `rejectComment(Message $comment): bool`
+
+Marks a comment or reply as not approved after authorization. If the `commentable.reject` Gate is defined, it must allow the action. If that Gate is not defined, a Laravel policy registered for the message can allow or deny the `reject` ability.
+
+```php
+public function rejectComment(Message $comment): bool
+```
+
+**Parameters:**
+- `$comment` - The message to reject
+
+**Returns:** `bool` - Result of the save operation
+
+**Throws:** `AuthorizationException` - If the configured Gate or policy denies the action
+
+**Example:**
+```php
+$moderator = User::find(1);
+$comment = Comment::find(1);
+
+$moderator->rejectComment($comment);
+```
+
+---
+
+#### Authorization Abilities
+
+Register package Gates for global lifecycle rules:
+
+```php
+use Illuminate\Support\Facades\Gate;
+
+Gate::define('commentable.comment', fn (User $user, Post $post, string $content) => true);
+Gate::define('commentable.reply', fn (User $user, Message $message, string $content) => true);
+Gate::define('commentable.delete', fn (User $user, Message $message) => true);
+Gate::define('commentable.forceDelete', fn (User $user, Message $message) => true);
+Gate::define('commentable.approve', fn (User $user, Message $message) => true);
+Gate::define('commentable.reject', fn (User $user, Message $message) => true);
+```
+
+For per-model customization, register Laravel policies with matching methods:
+
+```php
+class PostPolicy
+{
+    public function comment(User $user, Post $post, string $content): bool
+    {
+        return $post->acceptsComments();
+    }
+}
+```
+
+Package Gates take precedence over model policies. When neither is registered, comment creation and replies stay allowed, deletion keeps the ownership fallback, forced deletion falls back to deletion approval, and approval methods save the requested approval state.
 
 ---
 
