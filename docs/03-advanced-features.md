@@ -73,19 +73,41 @@ echo $comment->approved; // false
 ### Querying Approved Comments
 
 ```php
-// Get only approved comments
-$approvedComments = $post->comments()->where('approved', true)->get();
+$approvedComments = $post->comments()->approved()->get();
 
-// Get pending comments
-$pendingComments = $post->comments()->where('approved', false)->get();
+$pendingComments = $post->comments()->pending()->get();
 ```
 
 ### Approving Comments
 
 ```php
 $comment = Comment::find(1);
-$comment->approved = true;
-$comment->save();
+
+$comment->approve();
+```
+
+### Rejecting Comments
+
+```php
+$comment = Comment::find(1);
+
+$comment->reject();
+```
+
+### Marking Comments Pending
+
+```php
+$comment = Comment::find(1);
+
+$comment->markPending();
+```
+
+### Bulk Moderation
+
+```php
+$comments = Comment::pending()->latest()->take(20)->get();
+
+Comment::approveMany($comments);
 ```
 
 ### Building a Moderation Queue
@@ -93,8 +115,7 @@ $comment->save();
 ```php
 use Akira\Commentable\Models\Comment;
 
-// Get all pending comments across all models
-$pending = Comment::where('approved', false)
+$pending = Comment::pending()
     ->with(['commenter', 'commentable'])
     ->orderBy('created_at', 'desc')
     ->paginate(20);
@@ -150,6 +171,24 @@ Schema::create(config('commentable.revision_table', 'comment_revisions'), functi
     $table->longText('new_content');
     $table->text('reason')->nullable();
     $table->timestamps();
+});
+```
+
+### Moderation Events
+
+The package dispatches `CommentApproved` after `approve()` and `CommentRejected` after `reject()`:
+
+```php
+use Akira\Commentable\Events\CommentApproved;
+use Akira\Commentable\Events\CommentRejected;
+use Illuminate\Support\Facades\Event;
+
+Event::listen(CommentApproved::class, function (CommentApproved $event): void {
+    $comment = $event->comment;
+});
+
+Event::listen(CommentRejected::class, function (CommentRejected $event): void {
+    $comment = $event->comment;
 });
 ```
 
