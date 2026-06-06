@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0](https://github.com/akira-io/laravel-commentable/compare/v0.2.1...v0.3.0) (2026-06-06)
+
+### Bug Fixes
+
+- **package:** Authorize forced comment deletion ([79b6b67](https://github.com/akira-io/laravel-commentable/commit/79b6b67cc94a4a73a0f801189a9835b4a597aa81))
+- **package:** Satisfy event constructor annotations ([b7e2945](https://github.com/akira-io/laravel-commentable/commit/b7e2945c6bbb3633263aea65545d0bdaadf6fd7b))
+
+
+### Features
+
+- **package:** Add soft deletes and revisions ([555bbe8](https://github.com/akira-io/laravel-commentable/commit/555bbe876f807796d8b9ff25e510622c505ab06a))
+- **package:** Add moderation queue APIs ([7f333dc](https://github.com/akira-io/laravel-commentable/commit/7f333dcaeccf6bde354e0ae6146787eb93e7caf8))
+- **package:** Add comment lifecycle gates ([c5c9bc9](https://github.com/akira-io/laravel-commentable/commit/c5c9bc9c60b21bf4ce32c8a9f38bf830589390f4))
+
 ## [0.2.1](https://github.com/akira-io/laravel-commentable/compare/v0.2.0...v0.2.1) (2026-06-03)
 
 ### Bug Fixes
