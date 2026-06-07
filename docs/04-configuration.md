@@ -52,6 +52,20 @@ return [
 'user_foreign_key' => 'author_id',
 ```
 
+### Reply Depth
+
+Limit nested replies with `max_reply_depth`:
+
+```php
+return [
+    'max_reply_depth' => 3,
+];
+```
+
+**Default:** `null`
+
+**Use case:** Keep public threads bounded for moderation and rendering. A value of `1` allows replies to comments and rejects replies to replies.
+
 ### Model Overrides
 
 Override the default model classes used by the package:
@@ -140,6 +154,10 @@ return [
     'comment_table' => 'comments',
 
     'reaction_table' => 'reactions',
+
+    'revision_table' => 'comment_revisions',
+
+    'max_reply_depth' => null,
 
     /*
     |--------------------------------------------------------------------------

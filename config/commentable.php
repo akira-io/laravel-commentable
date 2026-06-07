@@ -10,6 +10,8 @@ return [
 
     'revision_table' => 'comment_revisions',
 
+    'max_reply_depth' => null,
+
     'user_foreign_key' => 'user_id',
 
     'models' => [

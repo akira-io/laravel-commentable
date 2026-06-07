@@ -92,7 +92,7 @@ $reply = Reply::find(1);
 $nestedReply = $user->reply($reply, 'I agree completely!');
 ```
 
-Replies work the same way for both `Comment` and `Reply` instances, allowing unlimited nesting depth.
+Replies store the original commentable model context and a `thread_depth` value. Set `commentable.max_reply_depth` to an integer to reject replies deeper than your application supports.
 
 ### Access Replies on a Comment
 

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->nullableMorphs('commentable');
             $table->nullableMorphs('commenter');
             $table->unsignedBigInteger('reply_id')->nullable()->index();
+            $table->unsignedInteger('thread_depth')->default(0)->index();
             $table->longText('content');
             $table->boolean('approved')->default(false)->index();
             $table->foreign('reply_id')->references('id')->on($commentTable)->cascadeOnDelete();
