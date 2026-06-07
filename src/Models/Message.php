@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property bool $approved
+ * @property int $thread_depth
+ * @property int|string|null $commentable_id
+ * @property string|null $commentable_type
  * @property string $content
  */
 abstract class Message extends Model implements CommentContract
@@ -26,6 +29,7 @@ abstract class Message extends Model implements CommentContract
         'commenter_type',
         'commenter_id',
         'approved',
+        'thread_depth',
     ];
 
     /**
@@ -190,6 +194,7 @@ abstract class Message extends Model implements CommentContract
         return [
             'approved' => 'boolean',
             'deleted_at' => 'datetime',
+            'thread_depth' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

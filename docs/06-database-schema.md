@@ -18,6 +18,7 @@ Stores all comments and replies in a single table using a self-referencing struc
 | `commenter_type` | string | Yes | Yes | Polymorphic type of the entity creating the comment |
 | `commenter_id` | bigInteger | Yes | Yes | Polymorphic ID of the entity creating the comment |
 | `reply_id` | bigInteger | Yes | Yes | Foreign key to parent comment/reply (null for top-level comments) |
+| `thread_depth` | unsignedInteger | No | Yes | Reply depth from the top-level comment |
 | `content` | longText | No | No | The comment or reply content |
 | `approved` | boolean | No | Yes | Moderation flag (default: false) |
 | `created_at` | timestamp | Yes | No | Creation timestamp |
@@ -30,6 +31,7 @@ Stores all comments and replies in a single table using a self-referencing struc
 - Composite index on `commentable_type` and `commentable_id` (polymorphic)
 - Composite index on `commenter_type` and `commenter_id` (polymorphic)
 - Index on `reply_id`
+- Index on `thread_depth`
 - Index on `approved`
 
 #### Foreign Keys
@@ -77,6 +79,7 @@ Stores edit history for comments and replies.
     'commenter_type' => 'App\Models\User',
     'commenter_id' => 10,
     'reply_id' => null, // No parent
+    'thread_depth' => 0,
     'content' => 'Great post!',
     'approved' => false,
 ]
@@ -86,11 +89,12 @@ Stores edit history for comments and replies.
 ```php
 [
     'id' => 2,
-    'commentable_type' => null, // Replies don't link to commentable
-    'commentable_id' => null,
+    'commentable_type' => 'App\Models\Post',
+    'commentable_id' => 5,
     'commenter_type' => 'App\Models\User',
     'commenter_id' => 15,
     'reply_id' => 1, // Parent comment ID
+    'thread_depth' => 1,
     'content' => 'Thank you!',
     'approved' => false,
 ]

@@ -6,8 +6,10 @@ namespace Akira\Commentable\Concerns;
 
 use Akira\Commentable\Contracts\CommentContract;
 use Akira\Commentable\Exceptions\DeleteCommentNotAllowedException;
+use Akira\Commentable\Exceptions\ReplyDepthExceededException;
 use Akira\Commentable\Models\Message;
 use Akira\Commentable\Models\Reply;
+use Akira\Commentable\Support\CommentPayloads;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
@@ -57,18 +59,21 @@ trait Commenter
         $this->requireCommentableTrait($model);
         $this->authorizeLifecycleAction(self::GATE_COMMENT, 'comment', $model, $comment);
 
-        return $model->comments()->create($this->prepareCommentData($comment));
+        return $model->comments()->create(CommentPayloads::commentData($this, $comment));
     }
 
     /**
      * @phpstan-return CommentContract
+     *
+     * @throws ReplyDepthExceededException
      */
     public function reply(Message $comment, string $reply): CommentContract
     {
 
         $this->authorizeLifecycleAction(self::GATE_REPLY, 'reply', $comment, $reply);
+        CommentPayloads::guardReplyDepth($comment);
 
-        return $comment->replies()->create($this->prepareCommentData($reply));
+        return $comment->replies()->create(CommentPayloads::replyData($this, $comment, $reply));
     }
 
     /**
@@ -203,18 +208,5 @@ trait Commenter
         $policy = Gate::getPolicyFor($subject);
 
         return is_object($policy) && method_exists($policy, $ability);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function prepareCommentData(string $comment): array
-    {
-
-        return [
-            'content' => $comment,
-            'commenter_type' => $this::class,
-            'commenter_id' => $this->getKey(),
-        ];
     }
 }

@@ -13,7 +13,10 @@ final class Reply extends Message
         'commenter_id',
         'content',
         'approved',
+        'commentable_type',
+        'commentable_id',
         'reply_id',
+        'thread_depth',
     ];
 
     /**
