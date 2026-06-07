@@ -31,6 +31,8 @@ Stores all comments and replies in a single table using a self-referencing struc
 - Composite index on `commenter_type` and `commenter_id` (polymorphic)
 - Index on `reply_id`
 - Index on `approved`
+- Composite index `commentable_approved_created_index` on `commentable_type`, `commentable_id`, `approved`, and `created_at`
+- Composite index `comments_reply_approved_created_index` on `reply_id`, `approved`, and `created_at`
 
 #### Foreign Keys
 
@@ -119,6 +121,7 @@ Stores reactions (likes, loves, etc.) to comments and replies.
 - Primary key on `id`
 - Composite index on `owner_type` and `owner_id` (polymorphic)
 - Foreign key index on `comment_id`
+- Composite index `reactions_comment_type_index` on `comment_id` and `type`
 
 #### Foreign Keys
 
@@ -319,6 +322,21 @@ $post = Post::with([
     'comments.replies.commenter',
     'comments.reactions'
 ])->find(1);
+```
+
+## Upgrade Notes
+
+Existing installations can add the query indexes with a project migration:
+
+```php
+Schema::table(config('commentable.comment_table', 'comments'), function (Blueprint $table): void {
+    $table->index(['commentable_type', 'commentable_id', 'approved', 'created_at'], 'commentable_approved_created_index');
+    $table->index(['reply_id', 'approved', 'created_at'], 'comments_reply_approved_created_index');
+});
+
+Schema::table(config('commentable.reaction_table', 'reactions'), function (Blueprint $table): void {
+    $table->index(['comment_id', 'type'], 'reactions_comment_type_index');
+});
 ```
 
 **Previous:** [API Reference](05-api-reference.md) | **Next:** [Testing](07-testing.md)
