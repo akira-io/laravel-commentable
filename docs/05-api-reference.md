@@ -26,7 +26,25 @@ public function comments(): MorphMany
 ```php
 $post = Post::find(1);
 $comments = $post->comments; // All comments on this post
-$approvedComments = $post->comments()->where('approved', true)->get();
+$approvedComments = $post->comments()->approved()->get();
+```
+
+---
+
+##### `commentsWithThread(): MorphMany`
+
+Returns comments with commenters, replies, nested reply commenters, and reaction counts eager loaded.
+
+```php
+public function commentsWithThread(): MorphMany
+```
+
+**Returns:** `MorphMany<Comment>` - Comment query with thread relationships
+
+**Example:**
+```php
+$post = Post::find(1);
+$comments = $post->commentsWithThread()->approved()->get();
 ```
 
 ---
@@ -531,6 +549,66 @@ final public function scopePending(Builder $query): Builder
 **Example:**
 ```php
 $pendingComments = Comment::pending()->get();
+```
+
+---
+
+##### `withCommenter(Builder $query): Builder`
+
+Eager loads the commenter relationship.
+
+```php
+final public function scopeWithCommenter(Builder $query): Builder
+```
+
+**Example:**
+```php
+$comments = Comment::withCommenter()->get();
+```
+
+---
+
+##### `withReplies(Builder $query): Builder`
+
+Eager loads direct replies.
+
+```php
+final public function scopeWithReplies(Builder $query): Builder
+```
+
+**Example:**
+```php
+$comments = Comment::withReplies()->get();
+```
+
+---
+
+##### `withThread(Builder $query): Builder`
+
+Eager loads commenters, direct replies, nested reply commenters, and reaction owners.
+
+```php
+final public function scopeWithThread(Builder $query): Builder
+```
+
+**Example:**
+```php
+$comments = Comment::withThread()->get();
+```
+
+---
+
+##### `withReactionCounts(Builder $query): Builder`
+
+Eager loads the `reactions_count` aggregate without loading reaction rows.
+
+```php
+final public function scopeWithReactionCounts(Builder $query): Builder
+```
+
+**Example:**
+```php
+$comments = Comment::withReactionCounts()->get();
 ```
 
 ---

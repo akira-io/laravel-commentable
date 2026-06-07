@@ -73,7 +73,11 @@ echo $comment->approved; // false
 ### Querying Approved Comments
 
 ```php
-$approvedComments = $post->comments()->approved()->get();
+$approvedComments = $post->comments()
+    ->approved()
+    ->withCommenter()
+    ->withReactionCounts()
+    ->get();
 
 $pendingComments = $post->comments()->pending()->get();
 ```
@@ -119,6 +123,17 @@ $pending = Comment::pending()
     ->with(['commenter', 'commentable'])
     ->orderBy('created_at', 'desc')
     ->paginate(20);
+```
+
+### Loading Threads
+
+Use `commentsWithThread()` to load comments, commenters, replies, nested reply commenters, and reaction counts for a commentable model:
+
+```php
+$comments = $post->commentsWithThread()
+    ->approved()
+    ->latest()
+    ->get();
 ```
 
 ## Soft Deletes and Recovery

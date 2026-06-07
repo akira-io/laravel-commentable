@@ -143,7 +143,8 @@ Add pagination for large comment threads:
 
 ```php
 $comments = $post->comments()
-    ->where('approved', true)
+    ->approved()
+    ->withReactionCounts()
     ->latest()
     ->paginate(20);
 ```
@@ -156,22 +157,13 @@ $comments = $post->comments()
 Accessing reactions or replies causes many queries.
 
 **Solution:**
-Create query scopes for common loading patterns:
+Use the package thread-loading scopes:
 
 ```php
-// In Comment model
-public function scopeWithFullThread($query)
-{
-    return $query->with([
-        'commenter',
-        'replies.commenter',
-        'replies.replies.commenter',
-        'reactions.owner'
-    ]);
-}
-
-// Usage
-$comments = $post->comments()->withFullThread()->get();
+$comments = $post->commentsWithThread()
+    ->approved()
+    ->latest()
+    ->get();
 ```
 
 ---

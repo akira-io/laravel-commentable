@@ -154,6 +154,47 @@ abstract class Message extends Model implements CommentContract
     }
 
     /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    final public function scopeWithCommenter(Builder $query): Builder
+    {
+        return $query->with('commenter');
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    final public function scopeWithReplies(Builder $query): Builder
+    {
+        return $query->with('replies');
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    final public function scopeWithThread(Builder $query): Builder
+    {
+        return $query->with([
+            'commenter',
+            'replies.commenter',
+            'replies.replies.commenter',
+            'reactions.owner',
+        ]);
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    final public function scopeWithReactionCounts(Builder $query): Builder
+    {
+        return $query->withCount('reactions');
+    }
+
+    /**
      * @return class-string<Message>
      */
     final protected static function configuredCommentModel(): string
