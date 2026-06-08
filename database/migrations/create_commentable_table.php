@@ -27,6 +27,8 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+            $table->index(['commentable_type', 'commentable_id', 'approved', 'created_at'], 'commentable_approved_created_index');
+            $table->index(['reply_id', 'approved', 'created_at'], 'comments_reply_approved_created_index');
         });
 
         Schema::create($revisionTable, function (Blueprint $table) use ($commentTable): void {
@@ -45,6 +47,7 @@ return new class extends Migration
             $table->foreignId('comment_id')->constrained($commentTable)->cascadeOnDelete();
             $table->string('type');
             $table->timestamps();
+            $table->index(['comment_id', 'type'], 'reactions_comment_type_index');
         });
     }
 
